@@ -1,5 +1,6 @@
 # User Interaction
 The product will support English and German Languages
+
 The product will count to a user-defined number sequentially
 
 # Compatibility Requirements
