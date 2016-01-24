@@ -1,0 +1,21 @@
+# Project Name
+project-name: xtag Demo
+
+# Document Hierarchy
+documents:
+    1:
+        "marketing-requirements.md"
+    2:
+        "software-requirements.md"
+    3:
+        "SOURCES"
+
+# TODO - Assume sources are lowest components?
+# TODO - Unit Test To Source traceability?
+
+# TODO - Test Plan tracing support?
+# test-plans:
+#     "system-test-plan.md"      : "marketing-requirements.md"
+#     "integration-test-plan.md" : "software-requirements.md"
+#     "UNIT-TESTS"               : ""
+
