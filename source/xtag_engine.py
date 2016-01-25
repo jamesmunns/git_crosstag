@@ -26,4 +26,4 @@ if __name__ == '__main__':
 
     #write_metadata(xtags)
     for tag in xtags:
-        print(tag)
+        print(tag, xtags[tag])

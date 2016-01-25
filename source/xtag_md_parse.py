@@ -16,7 +16,12 @@ def render(filename):
     contents = read_file(filename)
     reqs     = contents_to_reqs(contents)
 
-    return reqs
+    xtags = {}
+
+    for req in reqs:
+        xtags[generate_metadata(req)] = req
+
+    return xtags
 
 def read_file(filename):
     lines = None
@@ -54,7 +59,6 @@ def seek_line_parent(file_line, contents):
         # A header line is the only appropriate parent
         if contents[line].lstrip().startswith('#'):
             return [line]
-
 
     return []
 
@@ -105,9 +109,7 @@ def obtain_implicit_references(file_line, contents):
     else:
         ref_lines = seek_line_parent(file_line, contents)
 
-    # TODO! Resolve lines => SHAs. May not be possible here
-    #   due to necessary second pass.
-    return ref_lines
+    return [generate_sha(line_to_parsetext(contents[i])) for i in ref_lines]
 
 def is_line_requirement(i, line):
     # TODO
@@ -153,7 +155,10 @@ def contents_to_reqs(contents):
     return reqs
 
 def generate_metadata(requirement):
-    inputtext = get_project_name() + requirement.parsedtext
+    return generate_sha(requirement.parsedtext)
+
+def generate_sha(requirement_text):
+    inputtext = get_project_name() + requirement_text
 
     # TODO: Whats up with SHA-1 and unicode encoding?
     return hashlib.sha1(inputtext.encode('utf-8')).digest().hex()
