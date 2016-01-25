@@ -19,3 +19,14 @@ documents:
 #     "integration-test-plan.md" : "software-requirements.md"
 #     "UNIT-TESTS"               : ""
 
+# # TODO - Split requirement files? Especially for Software? e.g.:
+# - source
+#     - module_a
+#         module_a1.py
+#         module_a2.py
+#         module-a-requirements.md
+#     - module_b
+#         module_b.py
+#         module-b-requirements.md
+# # In the above case, module a/b requirements are at the same hierarchy level
+# #   and can both fulfill traceability completeness to the next level up in the hierarchy
