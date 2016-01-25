@@ -9,11 +9,12 @@ NUMBERED_LIST_RE = re.compile(r'\d+.')
 
 BULLET_MARKS = ['*', '-', '+']
 
+def remove_tags(text):
+    return TAG_RE.sub('', text)
+
 def render(filename):
-    contents = parse.read_file(filename)
+    contents = read_file(filename)
     reqs     = contents_to_reqs(contents)
-
-
 
     return reqs
 
@@ -24,6 +25,10 @@ def read_file(filename):
     return lines
 
 def seek_list_parent(file_line, contents):
+
+    def leading_spaces(line_in):
+        return len(line_in) - len(line_in.lstrip())
+
     for line in reversed(range(file_line)):
 
         # Unaccptable parent(s):
@@ -31,13 +36,17 @@ def seek_list_parent(file_line, contents):
         #
         #TODO - Any other parent items to avoid?
         if contents[line].strip() == '':
-            return []
+            return seek_line_parent(file_line, contents)
 
         # Known matches:
         #   - regular text
         #   - parent bullet
-        else:
-            return [line]
+        elif NUMBERED_LIST_RE.match(contents[file_line].lstrip()):
+            if leading_spaces(contents[file_line]) > leading_spaces(contents[line]):
+                return [line]
+
+    return []
+
 
 def seek_line_parent(file_line, contents):
     for line in reversed(range(file_line)):
@@ -46,8 +55,9 @@ def seek_line_parent(file_line, contents):
         if contents[line].lstrip().startswith('#'):
             return [line]
 
-        else:
-            return []
+
+    return []
+
 
 def seek_header_parent(file_line, contents):
 
@@ -60,7 +70,8 @@ def seek_header_parent(file_line, contents):
 
     # Header parent is any heading larger (smaller number) than current
     for line in reversed(range(file_line)):
-        if header_level(contents[line]) < init:
+        if (contents[line].lstrip().startswith('#') and
+                header_level(contents[line]) < init):
             return [line]
 
     # No match
@@ -76,21 +87,27 @@ def obtain_implicit_references(file_line, contents):
 
     # TODO: Is multiple parents ever an option?
 
+    ref_lines = None
+
     # Handle bullet points
     if switch in BULLET_MARKS:
-        return seek_list_parent(file_line, contents)
+        ref_lines = seek_list_parent(file_line, contents)
 
     # Handle numeric lists
     elif NUMBERED_LIST_RE.match(contents[file_line].lstrip()):
-        return seek_list_parent(file_line, contents)
+        ref_lines = seek_list_parent(file_line, contents)
 
     # Handle headings - TODO Setext headers
     elif switch == '#':
-        return seek_header_parent(file_line, contents)
+        ref_lines = seek_header_parent(file_line, contents)
 
     # default handling
     else:
-        return seek_line_parent(file_line, contents)
+        ref_lines = seek_line_parent(file_line, contents)
+
+    # TODO! Resolve lines => SHAs. May not be possible here
+    #   due to necessary second pass.
+    return ref_lines
 
 def is_line_requirement(i, line):
     # TODO
