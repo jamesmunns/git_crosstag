@@ -98,7 +98,7 @@ def is_line_requirement(i, line):
 
 def line_to_parsetext(inputline):
     # Parse Markdown
-    x = markdown.markßdown(inputline)
+    x = markdown.markdown(inputline)
 
     # Remove HTML - TODO: do we want this?
     x = remove_tags(inputline)
